@@ -27,8 +27,9 @@ class Birthday(Field):
             self.value = datetime.strptime(value, "%d.%m.%Y")
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
-    def __str__(self):
-        return self.value.strftime("%d.%m.%Y")
+        super().__init__(value)
+        def __str__(self):
+            return self.value
 
 class Record:
     def __init__(self, name):
@@ -151,17 +152,16 @@ def parse_input(user_input):
 
 @input_error
 def add_contact(args, book):
-    name = args[0]
-    if book.find(name):
-        return f"Contacts with name '{name}' already exist."
-    record = Record(name)
-    for phone in args[1:]:
-        try:
-            record.add_phone(phone)
-        except ValueError as e:
-            return f"Error adding phone {phone}: {e}"
-    book.add_record(record)
-    return f"Contact '{name}' added successfully."
+    name, phone = args
+    record = book.find(name)
+    if record:
+        record.add_phone(phone)
+        return f"Phone '{phone}' added to contact '{name}' successfully."
+    else:
+        record = Record(name)
+        record.add_phone(phone)
+        book.add_record(record)
+        return f"Contact '{name}' added successfully with phone '{phone}'."
 
 @input_error
 def change_contact (args, book):
@@ -177,8 +177,8 @@ def change_contact (args, book):
 
 @input_error
 def show_phone (args, book):
-    name = args [0]
-    record = book.find[name]
+    name = args[0]
+    record = book.find(name)
     if not record:
         return f"Error: Contact with name '{name}' not found."
     return f"Phones for {name}: {', '.join(str(phone) for phone in record.phones)}"
