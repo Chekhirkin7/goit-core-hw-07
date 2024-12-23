@@ -24,7 +24,7 @@ class Phone(Field):
 class Birthday(Field):
     def __init__(self, value):
         try:
-            self.value = datetime.strptime(value, "%d.%m.%Y")
+            datetime.strptime(value, "%d.%m.%Y")
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
         super().__init__(value)
@@ -106,7 +106,7 @@ class AddressBook(UserDict):
 
         for record in self.data.values():  # Використовуємо self.data.values(), щоб ітерувати через контакти
             if record.birthday:
-                birthday_date = record.birthday.value.date()
+                birthday_date = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
                 next_birthday = birthday_date.replace(year=today.year)
                 if next_birthday < today:
                     next_birthday = next_birthday.replace(year=today.year + 1)
